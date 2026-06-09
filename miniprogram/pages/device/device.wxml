@@ -1,0 +1,40 @@
+<view class="container">
+  <view class="card">
+    <view style="font-weight:600">{{device.name || '(no name)'}}</view>
+    <view class="mono muted">{{device.deviceId}}</view>
+    <view class="muted">State: {{state}}</view>
+  </view>
+
+  <view wx:if="{{state !== 'connected'}}" class="btn" bindtap="connect">Connect</view>
+  <view wx:if="{{state === 'connected'}}" class="btn btn--danger" bindtap="disconnect">Disconnect</view>
+
+  <view wx:if="{{services.length}}" class="card">
+    <view style="font-weight:600;margin-bottom:8rpx">Services</view>
+    <view wx:for="{{services}}" wx:key="uuid" class="mono" style="padding:8rpx 0;border-bottom:1rpx solid #eee" bindtap="loadCharacteristics" data-uuid="{{item.uuid}}">
+      {{item.uuid}} {{item.isPrimary ? '·primary' : ''}}
+    </view>
+  </view>
+
+  <view wx:if="{{characteristics.length}}" class="card">
+    <view style="font-weight:600;margin-bottom:8rpx">Characteristics of {{selectedService}}</view>
+    <view wx:for="{{characteristics}}" wx:key="uuid" style="padding:12rpx 0;border-bottom:1rpx solid #eee">
+      <view class="mono">{{item.uuid}}</view>
+      <view class="muted">
+        {{item.properties.read ? 'R ' : ''}}{{item.properties.write ? 'W ' : ''}}{{item.properties.notify ? 'N ' : ''}}{{item.properties.indicate ? 'I' : ''}}
+      </view>
+      <view class="row" style="margin-top:8rpx;gap:8rpx">
+        <view wx:if="{{item.properties.read}}" class="btn btn--secondary" style="flex:1;margin:0;padding:10rpx" bindtap="readChar" data-uuid="{{item.uuid}}">Read</view>
+        <view wx:if="{{item.properties.notify || item.properties.indicate}}" class="btn btn--secondary" style="flex:1;margin:0;padding:10rpx" bindtap="subscribe" data-uuid="{{item.uuid}}">Notify</view>
+      </view>
+      <view wx:if="{{item.properties.write}}" style="margin-top:8rpx">
+        <input class="mono" placeholder="hex e.g. 01ff" value="{{writeHex}}" bindinput="onWriteHex" style="border:1rpx solid #ddd;padding:10rpx;border-radius:8rpx" />
+        <view class="btn" style="margin-top:8rpx" bindtap="writeChar" data-uuid="{{item.uuid}}">Write</view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{log.length}}" class="card">
+    <view style="font-weight:600;margin-bottom:8rpx">Log</view>
+    <view wx:for="{{log}}" wx:key="*this" class="mono" style="margin-bottom:4rpx">{{item}}</view>
+  </view>
+</view>

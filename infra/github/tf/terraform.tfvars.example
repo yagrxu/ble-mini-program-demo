@@ -1,0 +1,20 @@
+# Copy to terraform.tfvars and fill in your values.
+
+project_name = "ble-demo"
+
+aws_profile = "default"
+aws_region  = "ap-southeast-1"
+
+github_owner = "yagrxu"
+github_repo  = "ble-mini-program-demo"
+
+deploy_branch = "main"
+
+# Must be globally unique. Convention: <project>-artifacts-<account-id>
+state_bucket_name = "ble-demo-artifacts-REPLACE_WITH_AWS_ACCOUNT_ID"
+lock_table_name   = "ble-demo-terraform-locks"
+
+tags = {
+  Project   = "ble-demo"
+  ManagedBy = "terraform"
+}

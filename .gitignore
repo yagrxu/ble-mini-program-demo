@@ -1,0 +1,9 @@
+.DS_Store
+node_modules/
+.aws-sam/
+*.zip
+
+# WeChat DevTools per-developer settings
+miniprogram/project.private.config.json
+
+# Terraform local state lives under infra/github/tf/.gitignore — do not duplicate here

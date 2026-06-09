@@ -1,0 +1,112 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: BLE telemetry backend (API Gateway REST + Lambda + DynamoDB + WAF)
+
+Globals:
+  Function:
+    Runtime: nodejs24.x
+    Timeout: 10
+    MemorySize: 256
+    Architectures: [arm64]
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref TelemetryTable
+
+Resources:
+  TelemetryTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: deviceId
+          AttributeType: S
+        - AttributeName: ts
+          AttributeType: N
+      KeySchema:
+        - AttributeName: deviceId
+          KeyType: HASH
+        - AttributeName: ts
+          KeyType: RANGE
+
+  TelemetryApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowHeaders: "'*'"
+        AllowOrigin: "'*'"
+
+  PostTelemetryFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: postTelemetry.handler
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref TelemetryTable
+      Events:
+        Post:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TelemetryApi
+            Method: POST
+            Path: /telemetry
+
+  ListTelemetryFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: listTelemetry.handler
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref TelemetryTable
+      Events:
+        Get:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TelemetryApi
+            Method: GET
+            Path: /telemetry
+
+  TelemetryWebAcl:
+    Type: AWS::WAFv2::WebACL
+    Properties:
+      Name: ble-demo-acl
+      Scope: REGIONAL
+      DefaultAction:
+        Allow: {}
+      VisibilityConfig:
+        SampledRequestsEnabled: true
+        CloudWatchMetricsEnabled: true
+        MetricName: ble-demo-acl
+      Rules:
+        - Name: RateLimitPerIp
+          Priority: 1
+          Action:
+            Block: {}
+          Statement:
+            RateBasedStatement:
+              Limit: 30
+              EvaluationWindowSec: 300
+              AggregateKeyType: IP
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: rate-limit-per-ip
+
+  TelemetryWebAclAssociation:
+    Type: AWS::WAFv2::WebACLAssociation
+    DependsOn: TelemetryApiProdStage
+    Properties:
+      ResourceArn: !Sub 'arn:${AWS::Partition}:apigateway:${AWS::Region}::/restapis/${TelemetryApi}/stages/Prod'
+      WebACLArn: !GetAtt TelemetryWebAcl.Arn
+
+Outputs:
+  ApiUrl:
+    Description: Base URL for the BLE telemetry API (include the /Prod stage)
+    Value: !Sub 'https://${TelemetryApi}.execute-api.${AWS::Region}.amazonaws.com/Prod'
+  TableName:
+    Value: !Ref TelemetryTable
+  WebAclArn:
+    Value: !GetAtt TelemetryWebAcl.Arn

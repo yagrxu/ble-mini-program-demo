@@ -1,0 +1,24 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/scan/scan",
+    "pages/device/device"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#0a84ff",
+    "navigationBarTitleText": "BLE Demo",
+    "navigationBarTextStyle": "white"
+  },
+  "permission": {
+    "scope.bluetooth": {
+      "desc": "用于扫描和连接BLE设备"
+    },
+    "scope.userLocation": {
+      "desc": "Android系统蓝牙扫描需要"
+    }
+  },
+  "requiredPrivateInfos": ["getLocation"],
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,31 @@
+<view class="container">
+  <view class="card">
+    <view style="font-size:36rpx;font-weight:600;margin-bottom:12rpx">BLE Demo</view>
+    <view class="muted">A WeChat mini program for scanning, connecting and exchanging data with BLE peripherals. Telemetry can be uploaded to AWS.</view>
+  </view>
+
+  <view class="card">
+    <view class="row">
+      <view>Bluetooth adapter</view>
+      <view class="muted">{{adapterState}}</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="muted">API base</view>
+    <view class="mono">{{apiBaseUrl}}</view>
+  </view>
+
+  <view class="btn" bindtap="goScan">Scan for devices</view>
+  <view class="btn btn--secondary" bindtap="fetchHistory">Fetch telemetry history</view>
+
+  <view wx:if="{{fetchInfo}}" class="card mono" style="color:#1c8c4a">{{fetchInfo}}</view>
+  <view wx:if="{{fetchError}}" class="card mono" style="color:#c0392b">ERR: {{fetchError}}</view>
+
+  <view class="card" wx:if="{{history.length}}">
+    <view style="font-weight:600;margin-bottom:8rpx">Recent telemetry</view>
+    <view wx:for="{{history}}" wx:key="ts" class="mono" style="margin-bottom:6rpx">
+      [{{item.ts}}] {{item.deviceId}} → {{item.value}}
+    </view>
+  </view>
+</view>

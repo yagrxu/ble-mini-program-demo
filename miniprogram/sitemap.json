@@ -1,0 +1,4 @@
+{
+  "desc": "Sitemap config — see https://developers.weixin.qq.com/miniprogram/dev/reference/configuration/sitemap.html",
+  "rules": [{ "action": "allow", "page": "*" }]
+}

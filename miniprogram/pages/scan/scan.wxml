@@ -1,0 +1,21 @@
+<view class="container">
+  <view class="row" style="margin-bottom:16rpx">
+    <view>
+      <view style="font-weight:600">Discovered devices</view>
+      <view class="muted">{{discovering ? 'scanning...' : 'idle'}} · {{devices.length}} found</view>
+    </view>
+    <view class="btn" style="width:200rpx;margin:0" bindtap="toggleScan">
+      {{discovering ? 'Stop' : 'Start'}}
+    </view>
+  </view>
+
+  <view wx:for="{{devices}}" wx:key="deviceId" class="card" bindtap="connect" data-id="{{item.deviceId}}" data-name="{{item.name}}">
+    <view style="font-weight:600">{{item.name || '(no name)'}}</view>
+    <view class="mono muted">{{item.deviceId}}</view>
+    <view class="muted">RSSI {{item.RSSI}} dBm</view>
+  </view>
+
+  <view wx:if="{{!devices.length && !discovering}}" class="muted" style="text-align:center;margin-top:60rpx">
+    Tap "Start" to begin scanning. On Android, location permission is required.
+  </view>
+</view>
