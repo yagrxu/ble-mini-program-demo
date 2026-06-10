@@ -108,6 +108,7 @@ where it lands in the DynamoDB table keyed by `(deviceId, ts)`.
 
 ## Documentation
 
+- [`docs/architecture.md`](docs/architecture.md) — **read first** — system map, layer-by-layer breakdown, and where to plug in new features
 - [`docs/mini-program-setup-explained.md`](docs/mini-program-setup-explained.md) — beginner walkthrough of the 5 setup steps
 - [`docs/troubleshooting.md`](docs/troubleshooting.md) — issues we hit while bringing the demo online and how to fix them
 - [`infra/github/tf/README.md`](infra/github/tf/README.md) — bootstrap Terraform (creates the GitHub repo + AWS OIDC role)
